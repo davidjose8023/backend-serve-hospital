@@ -6,6 +6,38 @@ var mdAutenticacion = require('../middelware/autenticacion');
 
 var Usuario = require('../models/usuario');
 
+
+//==========================================
+//  Metodo get para obtener un usuario
+//==========================================
+
+usuario.get('/userId/:id',(req, res) => {
+
+    var id = req.params.id;
+    
+    //console.log(id);
+    Usuario.findById(id , (err, usuario) => {
+
+        if( err ) 
+        return res.status(500).json({
+            ok: false,
+            mensaje: 'Error al buscar usuario',
+            errors: err
+        });
+        
+        if( !usuario ) 
+        return res.status(400).json({
+            ok: false,
+            mensaje: 'El usuario con el id: '+ id+' no exite',
+            errors: { message : 'No existe un usuario con ese id'}
+        });
+        return res.status(200).json({
+            ok: true,
+            usuario
+        });
+    }); 
+
+});
 //==========================================
 //  Metodo get para obtener los
 //  los usuarios
@@ -16,7 +48,7 @@ usuario.get('/',(req, res, next) => {
     var desde = req.query.desde || 0;
     desde = Number(desde);
 
-    Usuario.find({},'_id nombre email img role')
+    Usuario.find({},'_id nombre email img role google')
         .skip(desde)// salta los primeros desde
         .limit(5)
         .exec((err, usuarios)=>{

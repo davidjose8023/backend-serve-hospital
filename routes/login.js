@@ -68,7 +68,14 @@ login.post('/google', async (req, res) => {
                 });
 
             }else{
+                var usuario =  new Usuario();
 
+                usuario.email = googleUser.email;
+                usuario.nombre = googleUser.nombre;
+                usuario.img = googleUser.img;
+                usuario.google = true;
+                usuario.password = ':)';
+                var token = jwt.sign({ usuario: usuario }, SEED, { expiresIn: 14400}); // 4 horas
                 return res.status(200).json({
                     ok: true,
                     token,

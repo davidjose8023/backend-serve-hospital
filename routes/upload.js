@@ -47,6 +47,7 @@ app.put('/:tipo/:id',(req, res, next) => {
     //8138984482-492324.png
     var nombreArchivo = `${ id }-${ new Date().getMilliseconds()}.${ extension }`;
 
+
     var path = `./upload/${tipo}/${nombreArchivo}`;
 
     file.mv(path, function(err) {
@@ -56,6 +57,7 @@ app.put('/:tipo/:id',(req, res, next) => {
             mensaje: 'Error al mover file'
         });
     });
+ 
     //mover file a una carpeta
 
     subirPorTipo(tipo, id, nombreArchivo, res);
@@ -94,9 +96,7 @@ function subirPorTipo(tipo, id, nombreArchivo, res){
 
                     fs.unlink(pathViejo);
                 }
-                
-                
-        
+
                 usuario.img = nombreArchivo;
                 
         
