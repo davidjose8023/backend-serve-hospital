@@ -48,6 +48,8 @@ usuario.get('/',(req, res, next) => {
     var desde = req.query.desde || 0;
     desde = Number(desde);
 
+    console.log(desde);
+
     Usuario.find({},'_id nombre email img role google')
         .skip(desde)// salta los primeros desde
         .limit(5)
@@ -109,7 +111,8 @@ usuario.post('/', (req, res, next) => {
             
         return res.status(201).json({
             ok: true,
-            usuario:usuarioGuardado
+            usuario:usuarioGuardado,
+            menu: obtenerMenu(usuarioActualzado.role)
         });
 
     });
@@ -123,7 +126,7 @@ usuario.post('/', (req, res, next) => {
 //==========================================
 
 
-usuario.put('/:id',mdAutenticacion.verificaToken, (req, res) => {
+usuario.put('/:id',[mdAutenticacion.verificaToken, mdAutenticacion.verificaAdminRoleOMismoUsuario], (req, res) => {
 
     var id = req.params.id;
     var body = req.body;
@@ -160,7 +163,8 @@ usuario.put('/:id',mdAutenticacion.verificaToken, (req, res) => {
             usuarioActualzado.password = ";)";
             return res.status(200).json({
                 ok: true,
-                usuario:usuarioActualzado
+                usuario:usuarioActualzado,
+                menu: obtenerMenu(usuarioActualzado.role)
             });
 
 
@@ -177,7 +181,7 @@ usuario.put('/:id',mdAutenticacion.verificaToken, (req, res) => {
 //  Metodo DELETE para ELIMINAR
 //  los usuarios
 //==========================================
-usuario.delete('/:id',mdAutenticacion.verificaToken, (req, res) => {
+usuario.delete('/:id',[mdAutenticacion.verificaToken, mdAutenticacion.verificaAdminRole], (req, res) => {
 
     var id = req.params.id;
 
@@ -205,6 +209,41 @@ usuario.delete('/:id',mdAutenticacion.verificaToken, (req, res) => {
 
     });
 });
+
+function obtenerMenu( ROLE ){
+
+    var menu = [
+        {
+          titulo : 'Principal',
+          icono : 'mdi mdi-gauge',
+          submenu : [
+            {titulo : 'Dashboard', url : '/dashboard'},
+            {titulo : 'ProgressBar', url : '/progress'},
+            {titulo : 'Gráficas', url : '/graficas1'},
+            {titulo : 'Promesas', url : '/promesas'},
+            {titulo : 'Rxjs', url : '/rxjs'}
+          ]
+    
+        },
+        {
+          titulo: 'Mantenimiento',
+          icono : 'mdi mdi-folder-lock-open',
+          submenu : [
+            
+            {titulo : 'Hospitales', url : '/hospitales'},
+            {titulo : 'Medicos', url : '/medicos'}
+          ]
+        }
+      ];
+      //console.log(ROLE);
+      if( ROLE == "ADMIN_ROLE" ){
+
+        menu[1].submenu.unshift({titulo : 'Usuarios', url : '/usuarios'});
+      }
+      //console.log(menu[1].submenu);
+      return menu;
+
+}
 
 
 module.exports= usuario;

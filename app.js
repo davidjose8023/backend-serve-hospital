@@ -2,9 +2,14 @@
 
 var express = require('express');
 
+const morgan = require('morgan');
+
 var mongoose = require('mongoose');
 
 var bodyParser = require('body-parser');
+const cors = require('cors');
+
+
 
 
 mongoose.connection.openUri('mongodb://localhost:27017/hospitalDB', (err, res)=>{
@@ -20,14 +25,22 @@ mongoose.connection.openUri('mongodb://localhost:27017/hospitalDB', (err, res)=>
 
 var app = express();
 
+// settings
+app.set('port', process.env.PORT || 3000);
+
+// middlewares 
+app.use(morgan('dev'));
+app.use(cors());
+//app.use(express.json());
+
 // CORDS
-app.use(function(req, res, next) {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Authorization, X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
-    res.header('Allow', 'GET, POST, OPTIONS, PUT, DELETE');
-    next();
-});
+// app.use(function(req, res, next) {
+//     res.header('Access-Control-Allow-Origin', '*');
+//     res.header('Access-Control-Allow-Headers', 'Authorization, X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method');
+//     res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
+//     res.header('Allow', 'GET, POST, OPTIONS, PUT, DELETE');
+//     next();
+// });
 
 //Body Parser
 // parse application/x-www-form-urlencoded
@@ -61,6 +74,7 @@ app.use('/', appRoutes);
 
 //Escuchar Petición
 
-app.listen(3000, () => {
+app.listen(app.get('port'), () => {
     console.log('Corriendo Express en el puerto 3000');
 });
+
